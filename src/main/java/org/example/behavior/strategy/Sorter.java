@@ -23,6 +23,20 @@ public class Sorter {
         }
     }
 
+    public void sortFile(String filePath) {
+        File file = new File(filePath);
+        long fileSize = file.length();
+        if ( fileSize < 6 * GB ) {
+            new QuickSort().sort(filePath);
+        } else if ( fileSize < 10 * GB) {
+            new ExternalSort().sort(filePath);
+        } else if (fileSize < 100 * GB) {
+            new ConcurrentExternalSort().sort(filePath);
+        } else {
+           new MapreduceSort().sort(filePath);
+        }
+    }
+
     private void mapreduceSort(File file) {
         System.out.println("mapreduce排序");
     }
