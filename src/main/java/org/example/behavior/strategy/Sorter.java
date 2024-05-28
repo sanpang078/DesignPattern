@@ -1,59 +1,55 @@
 package org.example.behavior.strategy;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Sorter {
     /*一个可以根据文件大小选择对应排序方法并对文件进行排序的类*/
     private static final long GB = 1024 * 1024 * 1024;
+    private static ArrayList<AlgRange> algs = new ArrayList<AlgRange>();
 
-    public File createFile(String filePath) {
-        File file = new File(filePath);
-        return file;
+    static {
+        algs.add(new AlgRange(0, 6*GB, SortAlgFactory.getSortAlg("QuickSort")));
+        algs.add(new AlgRange(6*GB, 10*GB, SortAlgFactory.getSortAlg("ExternalSort")));
+        algs.add(new AlgRange(10*GB, 100*GB,SortAlgFactory.getSortAlg("ConcurrentExternalSort")));
+        algs.add(new AlgRange(100*GB, Long.MAX_VALUE, SortAlgFactory.getSortAlg("MapreduceSort")));
     }
-    public void sortFile(File file) {
-        long fileSize = file.length();
-        if ( fileSize < 6 * GB ) {
-            quickSort(file);
-        } else if ( fileSize < 10 * GB) {
-            externalSort(file);
-        } else if (fileSize < 100 * GB) {
-            concurrentExternalSort(file);
-        } else {
-            mapreduceSort(file);
-        }
-    }
+
 
     public void sortFile(String filePath) {
         File file = new File(filePath);
         long fileSize = file.length();
-        ISortAlg sortAlg;
-        if ( fileSize < 6 * GB ) {
-            sortAlg = SortAlgFactory.getSortAlg("QuickSort");
-        } else if ( fileSize < 10 * GB) {
-            sortAlg = SortAlgFactory.getSortAlg("ExternalSort");
-        } else if (fileSize < 100 * GB) {
-            sortAlg = SortAlgFactory.getSortAlg("ConcurrentExternalSort");
-        } else {
-            sortAlg = SortAlgFactory.getSortAlg("MapreduceSort");
+        ISortAlg sortAlg = null;
+
+        for (AlgRange algRange: algs) {
+            if (algRange.inRange(fileSize)) {
+                sortAlg = algRange.getAlg();
+                break;
+            }
         }
+        assert sortAlg != null;
         sortAlg.sort(filePath);
     }
 
-    private void mapreduceSort(File file) {
-        System.out.println("mapreduce排序");
-    }
+    private static class AlgRange { // AlgRange需要声明为静态类，因为非静态类需要持有外部类的实例，而AlgRange在外部类的静态代码块中被创建
+        private long start;
+        private long end;
+        private ISortAlg alg;
 
-    private void concurrentExternalSort(File file) {
-        System.out.println("多线程外部排序");
-    }
+        public AlgRange(long start, long end, ISortAlg alg) {
+            this.start = start;
+            this.end = end;
+            this.alg = alg;
+        }
 
-    private void externalSort(File file) {
-        System.out.println("外部排序");
-    }
+        public boolean inRange(long fileSize) {
+            return fileSize >= start && fileSize < end;
+        }
 
-    private void quickSort(File file) {
-        System.out.println("快速排序");
+        public ISortAlg getAlg() {
+            return alg;
+        }
     }
-
 
 }
+
