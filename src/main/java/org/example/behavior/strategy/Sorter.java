@@ -28,13 +28,13 @@ public class Sorter {
         long fileSize = file.length();
         ISortAlg sortAlg;
         if ( fileSize < 6 * GB ) {
-            sortAlg = new QuickSort();
+            sortAlg = SortAlgFactory.getSortAlg("QuickSort");
         } else if ( fileSize < 10 * GB) {
-            sortAlg = new ExternalSort();
+            sortAlg = SortAlgFactory.getSortAlg("ExternalSort");
         } else if (fileSize < 100 * GB) {
-            sortAlg = new ConcurrentExternalSort();
+            sortAlg = SortAlgFactory.getSortAlg("ConcurrentExternalSort");
         } else {
-            sortAlg = new MapreduceSort();
+            sortAlg = SortAlgFactory.getSortAlg("MapreduceSort");
         }
         sortAlg.sort(filePath);
     }
