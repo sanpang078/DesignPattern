@@ -26,15 +26,17 @@ public class Sorter {
     public void sortFile(String filePath) {
         File file = new File(filePath);
         long fileSize = file.length();
+        ISortAlg sortAlg;
         if ( fileSize < 6 * GB ) {
-            new QuickSort().sort(filePath);
+            sortAlg = new QuickSort();
         } else if ( fileSize < 10 * GB) {
-            new ExternalSort().sort(filePath);
+            sortAlg = new ExternalSort();
         } else if (fileSize < 100 * GB) {
-            new ConcurrentExternalSort().sort(filePath);
+            sortAlg = new ConcurrentExternalSort();
         } else {
-           new MapreduceSort().sort(filePath);
+            sortAlg = new MapreduceSort();
         }
+        sortAlg.sort(filePath);
     }
 
     private void mapreduceSort(File file) {
