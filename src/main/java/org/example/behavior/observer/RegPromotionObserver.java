@@ -7,13 +7,8 @@ public class RegPromotionObserver implements IRegObserver{
     }
     @Override
     public void handleRegSuccess(final Long userId) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                promotionService.issueNewUserExperienceCash(userId);
-            }
-        });
-        thread.start();
+
+         promotionService.issueNewUserExperienceCash(userId);
 
     }
 }
