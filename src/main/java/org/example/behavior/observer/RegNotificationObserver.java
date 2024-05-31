@@ -1,11 +1,13 @@
 package org.example.behavior.observer;
 
-public class RegNotificationObserver implements IRegObserver{
+import com.google.common.eventbus.Subscribe;
+
+public class RegNotificationObserver {
     NotificationService notificationService;
     public RegNotificationObserver(NotificationService notificationService){
         this.notificationService = notificationService;
     }
-    @Override
+    @Subscribe
     public void handleRegSuccess(final Long userId) {
 
         notificationService.sendInboxMessage(userId, "Welcome to ...");

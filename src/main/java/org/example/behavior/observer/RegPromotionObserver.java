@@ -1,13 +1,14 @@
 package org.example.behavior.observer;
 
-public class RegPromotionObserver implements IRegObserver{
+import com.google.common.eventbus.Subscribe;
+
+public class RegPromotionObserver{
     private PromotionService promotionService;
     public RegPromotionObserver(PromotionService promotionService) {
         this.promotionService = promotionService;
     }
-    @Override
+    @Subscribe
     public void handleRegSuccess(final Long userId) {
-
          promotionService.issueNewUserExperienceCash(userId);
 
     }

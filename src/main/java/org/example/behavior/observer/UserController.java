@@ -1,34 +1,34 @@
 package org.example.behavior.observer;
 
+import com.google.common.eventbus.AsyncEventBus;
+import com.google.common.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class UserController {
     private UserServer userServer;
-    private List<IRegObserver> regObservers = new ArrayList<IRegObserver>();
-    private ThreadPoolExecutor executor;
+    private static final int DEFAULT_EVENTBUS_THREAD_POOL_SIZE = 3;
+    private EventBus eventBus;
 
-    public UserController(UserServer userServer, ThreadPoolExecutor executor){
+    public UserController(UserServer userServer){
         this.userServer = userServer;
-        this.executor = executor;
+        this.eventBus = new EventBus(); //同步阻塞模式
+        //this.eventBus = new AsyncEventBus(Executors.newFixedThreadPool(DEFAULT_EVENTBUS_THREAD_POOL_SIZE));
     }
 
-    public void setRegObservers(List<IRegObserver> observers){
-        regObservers.addAll(observers);
+    public void setRegObservers(List<Object> observers){
+        for (Object observer: observers) {
+            eventBus.register(observer);
+        }
+
     }
 
     public Long register(String telephone, String password){
         final long userId = userServer.register(telephone, password);
-        for (final IRegObserver regObserver: regObservers) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    regObserver.handleRegSuccess(userId);
-                }
-            });
-
-        }
+        eventBus.post(userId);
         return userId;
     }
 }
