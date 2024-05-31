@@ -3,7 +3,7 @@ package org.example.behavior.observer;
 public class NotificationService {
     public void sendInboxMessage(long userId, String s) {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -6,7 +6,13 @@ public class RegNotificationObserver implements IRegObserver{
         this.notificationService = notificationService;
     }
     @Override
-    public void handleRegSuccess(Long userId) {
-        notificationService.sendInboxMessage(userId, "Welcome to ...");
+    public void handleRegSuccess(final Long userId) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                notificationService.sendInboxMessage(userId, "Welcome to ...");
+            }
+        });
+        thread.start();
     }
 }
