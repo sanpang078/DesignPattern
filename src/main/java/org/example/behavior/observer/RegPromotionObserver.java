@@ -1,6 +1,6 @@
 package org.example.behavior.observer;
 
-import com.google.common.eventbus.Subscribe;
+import org.example.behavior.observer.eventbus.Subscribe;
 
 public class RegPromotionObserver{
     private PromotionService promotionService;
