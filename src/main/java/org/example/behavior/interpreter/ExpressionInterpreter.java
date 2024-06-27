@@ -5,13 +5,13 @@ import java.util.LinkedList;
 
 public class ExpressionInterpreter {
 
-    private Deque<Long> numbers = new LinkedList();
+    private Deque<Expression> numbers = new LinkedList();
 
     public long interpret(String expression){
         String[] elements = expression.split(" ");
         int length = elements.length;
         for (int i = 0; i < (length + 1)/2; i++ ) {
-            numbers.addLast(Long.parseLong(elements[i]));
+            numbers.addLast(new NumberExpression(elements[i]));
         }
 
         for (int i = (length+1)/2; i < length; i++) {
@@ -21,8 +21,8 @@ public class ExpressionInterpreter {
                 throw new RuntimeException("Expression is invalid: " + expression);
             }
 
-            NumberExpression exp1 = new NumberExpression(numbers.pollFirst());
-            NumberExpression exp2 = new NumberExpression(numbers.pollFirst());
+            Expression exp1 = numbers.pollFirst();
+            Expression exp2 = numbers.pollFirst();
             Expression combineExp = null;
 
             if ( operator.equals("+") ) {
@@ -34,14 +34,14 @@ public class ExpressionInterpreter {
             } else if (operator.equals("/")) {
                 combineExp = new DivisionExpression(exp1, exp2);
             }
-            numbers.addFirst(combineExp.interpret());
+            numbers.addFirst(combineExp);
         }
 
         if (numbers.size() != 1) {
             throw new RuntimeException("expression is invalid:" + expression);
         }
 
-        return numbers.pop();
+        return numbers.pop().interpret();
     }
 
 }
