@@ -21,21 +21,20 @@ public class ExpressionInterpreter {
                 throw new RuntimeException("Expression is invalid: " + expression);
             }
 
-            long number1 = numbers.pollFirst();
-            long number2 = numbers.pollFirst();
-            long result = 0;
+            NumberExpression exp1 = new NumberExpression(numbers.pollFirst());
+            NumberExpression exp2 = new NumberExpression(numbers.pollFirst());
+            Expression combineExp = null;
 
             if ( operator.equals("+") ) {
-                result = number1 + number2;
+                combineExp = new AdditionExpression(exp1, exp2);
             } else if (operator.equals("-")) {
-                result = number1 - number2;
+                combineExp = new SubstractExpression(exp1, exp2);
             } else if (operator.equals("*")) {
-                result = number1 * number2;
+                combineExp = new MultiplicationExpression(exp1, exp2);
             } else if (operator.equals("/")) {
-                result = number1 / number2;
+                combineExp = new DivisionExpression(exp1, exp2);
             }
-
-            numbers.addFirst(result);
+            numbers.addFirst(combineExp.interpret());
         }
 
         if (numbers.size() != 1) {
